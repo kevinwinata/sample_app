@@ -15,7 +15,7 @@ describe "Static pages" do
       let(:user) { FactoryGirl.create(:user) }
       before do
         FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
-        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+        
         sign_in user
         visit root_path
       end
@@ -25,6 +25,20 @@ describe "Static pages" do
           page.should have_selector("li##{item.id}", text: item.content)
         end
       end
+
+      it { should have_content(user.microposts.count) }
+
+      describe "it should not be plural" do
+        it { should have_content("micropost") }
+      end
+
+      describe "it should be plural" do
+        before do
+          FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+        end
+        it { should have_content("microposts") }
+      end
+
     end
   end
 
