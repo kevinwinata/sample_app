@@ -15,6 +15,7 @@ describe "Static pages" do
       let(:user) { FactoryGirl.create(:user) }
       before do
         FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+        FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
         
         sign_in user
         visit root_path
@@ -28,15 +29,19 @@ describe "Static pages" do
 
       it { should have_content(user.microposts.count) }
 
-      describe "it should not be plural" do
-        it { should have_content("micropost") }
+      describe "it should be plural" do
+        it { should have_content("microposts") }
       end
 
-      describe "it should be plural" do
+      describe "follower/following counts" do
+        let(:other_user) { FactoryGirl.create(:user) }
         before do
-          FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet")
+          other_user.follow!(user)
+          visit root_path
         end
-        it { should have_content("microposts") }
+
+        it { should have_link("0 following", href: following_user_path(user)) }
+        it { should have_link("1 followers", href: followers_user_path(user)) }
       end
 
     end
